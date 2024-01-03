@@ -1,24 +1,27 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\Setting;
 
+use App\Filament\Resources\Setting;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
-use Illuminate\Contracts\Support\Htmlable;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 
-class UserResource extends Resource
+class AdminResource extends Resource
 {
     protected static ?string $model = User::class;
+
+    protected static ?string $navigationGroup = 'Setting';
+    protected static ?string $navigationLabel = "Admins";
+    protected static ?string $label = "Admin";
 
     protected static ?string $navigationIcon = 'heroicon-m-user-group';
 
@@ -30,13 +33,6 @@ class UserResource extends Resource
     public static function getGlobalSearchResultTitle(Model $record): string | Htmlable
     {
         return new HtmlString($record->name . '<small> ('.$record->email.')</small>');
-    }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        $data['last_edited_by_id'] = auth()->id();
-
-        return $data;
     }
 
     public static function form(Form $form): Form
@@ -75,6 +71,7 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -93,9 +90,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Setting\UserResource\Pages\ListAdmins::route('/'),
+            'create' => Setting\UserResource\Pages\CreateAdmin::route('/create'),
+            'edit' => Setting\UserResource\Pages\EditAdmin::route('/{record}/edit'),
         ];
     }
 }
